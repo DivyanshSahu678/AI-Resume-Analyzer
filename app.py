@@ -5,6 +5,7 @@ from src.skill_extractor import extract_skills
 from src.analyzer import analyze_resume
 from src.similarity import calculate_similarity
 from src.suggestions import generate_suggestions
+from src.ats_score import calculate_ats_score
 
 st.set_page_config(
     page_title="AI Resume Analyzer",
@@ -41,39 +42,53 @@ if st.button("Analyze Resume"):
     resume_skills = extract_skills(resume_text)
     job_skills = extract_skills(job_description)
 
-    # Analyze
+    # Analyze Resume
     result = analyze_resume(resume_skills, job_skills)
-    
-    suggestions = generate_suggestions(result["missing"])
 
-    # Similarity
-    similarity = calculate_similarity(resume_text, job_description)
+    # Calculate Similarity
+    similarity = calculate_similarity(
+        resume_text,
+        job_description
+    )
+
+    # Calculate ATS Score
+    ats_score = calculate_ats_score(
+        result,
+        similarity,
+        resume_text
+    )
+
+    # Generate Suggestions
+    suggestions = generate_suggestions(result["missing"])
 
     st.success("Analysis Completed ✅")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         st.metric("Resume Score", f"{result['score']}%")
 
     with col2:
         st.metric("Similarity Score", f"{similarity}%")
-        st.progress(result["score"] / 100)
+
+    with col3:
+        st.metric("ATS Score", f"{ats_score}%")
 
     st.subheader("✅ Matched Skills")
 
     for skill in result["matched"]:
         st.success(skill.title())
-    
-        st.subheader("❌ Missing Skills")
+
+    st.subheader("❌ Missing Skills")
 
     for skill in result["missing"]:
         st.error(skill.title())
-    
-        st.subheader("💡 Suggestions")
+
+    st.subheader("💡 Suggestions")
 
     for suggestion in suggestions:
         st.info(suggestion)
 
-        st.subheader("📋 Resume Skills")
-        st.write(resume_skills)
+    st.subheader("📋 Resume Skills")
+
+    st.write(resume_skills)

@@ -1,35 +1,13 @@
 import re
+import pandas as pd
 
-# List of skills we want to detect
-SKILLS = [
-    "Python",
-    "Java",
-    "C",
-    "C++",
-    "JavaScript",
-    "HTML",
-    "CSS",
-    "SQL",
-    "React",
-    "Node.js",
-    "Git",
-    "GitHub",
-    "Machine Learning",
-    "Deep Learning",
-    "Data Science",
-    "TensorFlow",
-    "PyTorch",
-    "Pandas",
-    "NumPy",
-    "Scikit-learn"
-]
+# Load skills from CSV
+skills_df = pd.read_csv("data/skills.csv")
+
+SKILLS = skills_df["Skill"].dropna().tolist()
 
 
 def extract_skills(text):
-    """
-    Extract skills from resume text.
-    """
-
     found_skills = []
 
     for skill in SKILLS:
@@ -39,4 +17,4 @@ def extract_skills(text):
         if re.search(pattern, text, re.IGNORECASE):
             found_skills.append(skill)
 
-    return found_skills
+    return sorted(list(set(found_skills)))
