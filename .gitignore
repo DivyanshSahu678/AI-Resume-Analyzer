@@ -2,3 +2,14 @@ venv/
 __pycache__/
 *.pyc
 .env
+
+
+resume_report.pdf
+
+reports/
+
+.idea/
+.vscode/
+
+.DS_Store
+Thumbs.db
